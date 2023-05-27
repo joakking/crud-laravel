@@ -1,16 +1,9 @@
 @extends('layouts.base')
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div>
-            <h2>CRUD de Tareas</h2>
-        </div>
-        <div>
-            <a href="{{route('tasks.create')}}" class="btn btn-primary">Crear tarea</a>
-        </div>
-    </div>
 
+<div class="row">
+ 
 @if (Session::get('success'))
 {{-- <div class="alert alert-success mt-2">
     <strong>{{ Session::get('success') }}<br>
@@ -20,72 +13,55 @@
 </div>
 @endif
 
-@foreach ($tasks as $task)
-<div class="accordion" id="accordionExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="{{$task->id}}">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{$task->id}}" aria-expanded="false" aria-controls="collapseTwo">
-        {{ $task->id}} {{$task->title}}
-      </button>
-    </h2>
-    <div id="collapse{{$task->id}}" class="accordion-collapse collapse" aria-labelledby="{{$task->id}}" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        <strong> {{ $task->description}} </strong> 
+
+
+<main>
+  <section class="py-5 text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Tareas Joa</h1>
+        <p class="lead text-body-secondary">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
+        <p>
+          <a href="{{route('tasks.create')}}" class="btn btn-primary my-2">Crear Tarea</a>
+          <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+        </p>
       </div>
     </div>
-  </div>
-</div>
-@endforeach
+  </section>
+<div class="album py-5 bg-body-tertiary">
+  <div class="container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      @foreach ($tasks as $task)
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+            <div class="card-body">
+              <p class="card-text">{{ $task->title}}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalnumero{{ $task->id }}">Ver</button>
+                  <a href="{{ route('tasks.edit', $task) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                  <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                </form>
+                </div>
+                @if ($task->status == "Completada")
+                <span class="badge text-bg-success">{{ $task->status }}</span>      
+              @elseif  ($task->status == "En proceso")
+                <span class="badge text-bg-warning">{{ $task->status }}</span>
+              @else
+                <span class="badge text-bg-danger">{{ $task->status }}</span>
+              @endif
+                <small class="text-body-secondary">{{ $task->due_date }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
 
-
-    <div class="col-12 mt-4">
-        <table class="table table-bordered">
-            <tr class="text-secondary">
-                <th>Tarea</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acción</th>
-                <th>prueba</th>
-            </tr>
-            @foreach ($tasks as $task)
-            <tr>
-                <td class="fw-bold">{{ $task->title}}</td>
-                <td>{{ $task->description}}</td>
-                <td>
-                    {{$task->due_date}}
-                </td>
-                <td>
-               @if ($task->status == "Completada")
-                 <span class="badge bg-success fs-6">{{ $task->status }}</span>      
-               @elseif  ($task->status == "En proceso")
-                 <span class="badge bg-info fs-6">{{ $task->status }}</span>
-               @else
-                 <span class="badge bg-warning fs-6">{{ $task->status }}</span>
-               @endif
-
-                
-                </td>
-                <td>
-                    <a href="{{ route('tasks.edit', $task) }}" class="btn btn-info">Editar</a>
-
-
-                    
-                    <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger"  data-toggle="modal" data-target="#exampleModal">Eliminar</button>
-                    </form>
-                    
-                </td>
-                <td>
-   <!-- Button trigger modal -->
-   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Ver Modal
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <!-- Modal -->
+    <div class="modal fade" id="modalnumero{{ $task->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -95,7 +71,7 @@
           </button>
         </div>
         <div class="modal-body">
-          ...
+          {{ $task->description }}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -103,13 +79,13 @@
         </div>
       </div>
     </div>
-  </div>
-                </td>
-            </tr>
-            @endforeach
-        </table>
-              
-        {{ $tasks->links()}}
     </div>
+
+      @endforeach
+    </div>
+  </div>
+</div>
+</main>
+   
 </div>
 @endsection
